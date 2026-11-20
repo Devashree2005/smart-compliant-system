@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart Campus Complaints</title>
+<style>
+:root{--bg:#f5f6fa;--card:#fff;--tx:#1d2433;--mu:#667085;--bd:#e3e6ee;--pr:#3b5bdb;--prt:#fff;--pend:#b54708;--pendb:#fef0c7;--prog:#175cd3;--progb:#d1e9ff;--done:#067647;--doneb:#d3f8df;--bad:#b42318;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--card:#1b2030;--tx:#e8ebf3;--mu:#98a2b3;--bd:#2c3347;--pr:#748ffc;--prt:#12151c;--pend:#fec84b;--pendb:#3d2c08;--prog:#84caff;--progb:#102a4c;--done:#6ce9a6;--doneb:#0b3a24;--bad:#f97066}}
+:root[data-theme="dark"]{--bg:#12151c;--card:#1b2030;--tx:#e8ebf3;--mu:#98a2b3;--bd:#2c3347;--pr:#748ffc;--prt:#12151c;--pend:#fec84b;--pendb:#3d2c08;--prog:#84caff;--progb:#102a4c;--done:#6ce9a6;--doneb:#0b3a24;--bad:#f97066}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:var(--card);border-bottom:1px solid var(--bd);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-size:20px;margin:0}h1 small{display:block;font-size:13px;color:var(--mu);font-weight:400}
+nav{display:flex;gap:6px}
+nav button{border:1px solid var(--bd);background:none;color:var(--tx);padding:8px 14px;border-radius:8px;cursor:pointer;font:inherit}
+nav button.on{background:var(--pr);color:var(--prt);border-color:var(--pr)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:14px}
+h2{font-size:17px;margin:0 0 12px}
+label{display:block;font-size:13px;font-weight:600;margin:10px 0 4px}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+textarea{min-height:90px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+.btn{background:var(--pr);color:var(--prt);border:0;padding:10px 18px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer;margin-top:14px}
+.btn.sm{padding:6px 12px;margin:0;font-size:13px}
+.btn.alt{background:none;color:var(--tx);border:1px solid var(--bd)}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600}
+.Pending{background:var(--pendb);color:var(--pend)}.In-Progress{background:var(--progb);color:var(--prog)}.Completed{background:var(--doneb);color:var(--done)}
+.cmp{border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px;background:var(--bg)}
+.cmp h3{margin:0 0 4px;font-size:15px}
+.meta{font-size:12.5px;color:var(--mu);display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 8px}
+.rem{border-left:3px solid var(--pr);padding:4px 10px;margin-top:8px;font-size:13.5px}
+.steps{display:flex;gap:4px;margin:10px 0 2px}
+.steps i{flex:1;height:5px;border-radius:3px;background:var(--bd)}.steps i.f{background:var(--pr)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px}
+.stat b{font-size:24px;display:block}.stat span{font-size:12.5px;color:var(--mu)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.bar input,.bar select{flex:1;min-width:130px;width:auto}
+.empty{text-align:center;color:var(--mu);padding:24px}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.ctl input{flex:1;min-width:150px;width:auto}.ctl select{width:auto}
+.ok{color:var(--done);font-weight:600;margin-top:10px}.err{color:var(--bad);margin-top:10px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<header><div class="wrap top">
+  <h1>🎓 Smart Campus Complaints<small>Report it. Track it. Get it fixed.</small></h1>
+  <nav><button id="tS" class="on">Student Portal</button><button id="tA">Admin Dashboard</button></nav>
+</div></header>
+<main class="wrap">
+<div id="msg" class="card empty">Loading…</div>
+
+<section id="student" class="hide">
+  <div class="card">
+    <h2>Submit a new complaint</h2>
+    <div class="row">
+      <div><label for="name">Your name</label><input id="name" placeholder="e.g. Priya Raman"></div>
+      <div><label for="roll">Roll / ID number</label><input id="roll" placeholder="e.g. 21CS104"></div>
+    </div>
+    <div class="row">
+      <div><label for="cat">Category</label><select id="cat"><option>Hostel</option><option>Classroom</option><option>Library</option><option>Canteen</option><option>Wi-Fi / Internet</option><option>Transport</option><option>Sanitation</option><option>Other</option></select></div>
+      <div><label for="pri">Priority</label><select id="pri"><option>Low</option><option selected>Medium</option><option>High</option></select></div>
+    </div>
+    <label for="loc">Location</label><input id="loc" placeholder="e.g. Block B, Room 204">
+    <label for="ttl">Title</label><input id="ttl" maxlength="80" placeholder="Short summary of the problem">
+    <label for="dsc">Description</label><textarea id="dsc" placeholder="Describe the issue in detail…"></textarea>
+    <button class="btn" id="submit">Submit complaint</button>
+    <div id="fmsg"></div>
+  </div>
+  <div class="card"><h2>My complaints</h2><div id="mine"></div></div>
+</section>
+
+<section id="admin" class="hide">
+  <div class="stats" id="stats"></div>
+  <div class="card">
+    <h2>All complaints</h2>
+    <div class="bar">
+      <input id="q" placeholder="Search title, student, location…">
+      <select id="fs"><option value="">All statuses</option><option>Pending</option><option>In Progress</option><option>Completed</option></select>
+      <select id="fc"><option value="">All categories</option></select>
+    </div>
+    <div id="all"></div>
+  </div>
+</section>
+</main>
+
+<script>
+const STATUS=["Pending","In Progress","Completed"];
+let uid=localStorage.getItem("campusUid"),adminKey=sessionStorage.getItem("campusAdminKey")||"",isAdmin=false,list=[],tab="student";
+if(!uid){uid=crypto.randomUUID();localStorage.setItem("campusUid",uid)}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=t=>new Date(t).toLocaleString([], {day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+const cls=s=>s.replace(" ","-");
+
+function show(t){
+  tab=t;
+  $("student").classList.toggle("hide",t!=="student");
+  $("admin").classList.toggle("hide",t!=="admin");
+  $("tS").classList.toggle("on",t==="student");
+  $("tA").classList.toggle("on",t==="admin");
+}
+$("tS").onclick=()=>show("student");
+$("tA").onclick=()=>show("admin");
+
+function card(c,adm){
+  const i=STATUS.indexOf(c.status);
+  return `<div class="cmp"><div style="display:flex;justify-content:space-between;gap:8px;align-items:start">
+    <h3>${esc(c.title)}</h3><span class="badge ${cls(c.status)}">${c.status}</span></div>
+    <div class="meta"><span>#${esc(c.ticket)}</span><span>${esc(c.category)}</span><span>📍 ${esc(c.location||"—")}</span><span>Priority: ${esc(c.priority)}</span><span>${fmt(c.createdAt)}</span>${adm?`<span>👤 ${esc(c.name)} (${esc(c.roll)})</span>`:""}</div>
+    <div>${esc(c.description)}</div>
+    <div class="steps"><i class="f"></i><i class="${i>=1?"f":""}"></i><i class="${i>=2?"f":""}"></i></div>
+    <div class="meta"><span>Submitted</span><span>→ In Progress</span><span>→ Completed${c.completedAt?" "+fmt(c.completedAt):""}</span></div>
+    ${c.remark?`<div class="rem"><b>Admin remark:</b> ${esc(c.remark)}</div>`:""}
+    ${adm?`<div class="ctl"><select data-s="${c.id}">${STATUS.map(s=>`<option${s===c.status?" selected":""}>${s}</option>`).join("")}</select>
+      <input data-r="${c.id}" placeholder="Add a remark for the student" value="${esc(c.remark||"")}">
+      <button class="btn sm" data-u="${c.id}">Update</button></div>`:""}
+  </div>`;
+}
+
+function render(){
+  const mine=list.filter(c=>c.uid===uid);
+  $("mine").innerHTML=mine.length?mine.map(c=>card(c,false)).join(""):'<div class="empty">You haven’t submitted any complaints yet.</div>';
+  if(!isAdmin)return;
+  const n=s=>list.filter(c=>c.status===s).length;
+  $("stats").innerHTML=[["Total",list.length],["Pending",n("Pending")],["In Progress",n("In Progress")],["Completed",n("Completed")]].map(([a,b])=>`<div class="stat"><b>${b}</b><span>${a}</span></div>`).join("");
+  const cats=[...new Set(list.map(c=>c.category))],cur=$("fc").value;
+  $("fc").innerHTML='<option value="">All categories</option>'+cats.map(c=>`<option${c===cur?" selected":""}>${esc(c)}</option>`).join("");
+  const q=$("q").value.toLowerCase(),fs=$("fs").value,fc=$("fc").value;
+  const rows=list.filter(c=>(!fs||c.status===fs)&&(!fc||c.category===fc)&&(!q||[c.title,c.name,c.roll,c.location,c.description,c.ticket].join(" ").toLowerCase().includes(q)));
+  $("all").innerHTML=rows.length?rows.map(c=>card(c,true)).join(""):'<div class="empty">No complaints match.</div>';
+}
+["q","fs","fc"].forEach(k=>$(k).addEventListener("input",render));
+
+$("all").addEventListener("click",async e=>{
+  const id=e.target.dataset.u;if(!id)return;
+  const st=document.querySelector(`[data-s="${id}"]`).value,rm=document.querySelector(`[data-r="${id}"]`).value.trim();
+  const old=list.find(c=>c.id===id);
+  const upd={status:st,remark:rm,updatedAt:Date.now()};
+  if(st==="Completed"&&old.status!=="Completed")upd.completedAt=Date.now();
+  if(st!=="Completed")upd.completedAt=null;
+  e.target.disabled=true;
+  try{await api("/api/complaints/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify(upd),admin:true});await loadComplaints()}catch(x){alert("Could not update: "+x.message)}
+  e.target.disabled=false;
+});
+
+$("submit").onclick=async()=>{
+  const v=k=>$(k).value.trim(),m=$("fmsg");
+  if(!v("name")||!v("roll")||!v("ttl")||!v("dsc")){m.className="err";m.textContent="Please fill in your name, ID, title and description.";return}
+  const ticket=String(Date.now()).slice(-6);
+  $("submit").disabled=true;
+  try{
+    await api("/api/complaints",{method:"POST",body:JSON.stringify({uid,name:v("name"),roll:v("roll"),category:$("cat").value,priority:$("pri").value,location:v("loc"),title:v("ttl"),description:v("dsc")})});
+    await loadComplaints();
+    m.className="ok";m.textContent="✓ Complaint submitted. Your ticket number is #"+ticket+".";
+    ["ttl","dsc","loc"].forEach(k=>$(k).value="");
+  }catch(x){m.className="err";m.textContent="Could not submit: "+(x.message||x.code)}
+  $("submit").disabled=false;
+};
+
+async function api(path,options={}){
+  const headers={"Content-Type":"application/json"};if(options.admin)headers["X-Admin-Key"]=adminKey;
+  const res=await fetch(path,{...options,headers});const body=await res.json().catch(()=>({}));
+  if(!res.ok)throw new Error(body.error||`Request failed (${res.status})`);return body;
+}
+async function loadComplaints(){
+  list=await api("/api/complaints?uid="+encodeURIComponent(uid),{headers:{"X-Admin-Key":adminKey}});
+  isAdmin=!!adminKey;
+  if(!isAdmin&&tab==="admin")show("student");
+  $("msg").classList.add("hide");show(tab);render();
+}
+$("tA").onclick=()=>{if(!adminKey){const key=prompt("Enter the admin key configured on the server:");if(!key)return;adminKey=key;sessionStorage.setItem("campusAdminKey",key)}loadComplaints().then(()=>show("admin")).catch(e=>{adminKey="";sessionStorage.removeItem("campusAdminKey");alert(e.message)})};
+(async()=>{try{await loadComplaints();setInterval(()=>loadComplaints().catch(e=>console.error(e)),5000)}catch(e){$("msg").textContent="Could not connect to MongoDB service: "+e.message}})();
+</script>
+</body>
+</html>
